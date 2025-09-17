@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/jorgesensei33/proyectos/nextia/trading/token/contracts/NextiaToken.sol": {
-      "lastModificationDate": 1758072192143,
-      "contentHash": "a30fd2ef7f3b5a2720ccb9d19a0eab11",
+      "lastModificationDate": 1758133346563,
+      "contentHash": "c31c5c54ab3284c89abd47ad44765616",
       "sourceName": "contracts/NextiaToken.sol",
       "solcConfig": {
         "version": "0.8.20",
