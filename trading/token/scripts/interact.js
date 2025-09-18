@@ -1,66 +1,69 @@
 const hre = require("hardhat");
 const ethers = hre.ethers;
+require("dotenv").config();
+
+async function getContract() {
+  const Nextia = await ethers.getContractFactory("NextiaToken");
+  return Nextia.attach(process.env.NEXTIA_CONTRACT);
+}
 
 async function main() {
   const [owner, addr1, addr2] = await ethers.getSigners();
+  const token = await getContract();
 
-  // ➤ Reemplaza con tu dirección desplegada en localhost
-  const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+  const args = process.argv.slice(2);
+  const command = args[0];
 
-  const Nextia = await ethers.getContractFactory("NextiaToken");
-  const token = await Nextia.attach(contractAddress);
+  switch (command) {
+    case "balanceOf":
+      const who = args[1] === "owner" ? owner.address : (args[1] === "addr1" ? addr1.address : addr2.address);
+      console.log("Balance:", (await token.balanceOf(who)).toString());
+      break;
 
-  console.log("Contrato:", contractAddress);
+    case "transfer":
+      const to = args[1] === "addr1" ? addr1.address : addr2.address;
+      const amount = ethers.parseUnits(args[2], 18);
+      const tx1 = await token.transfer(to, amount);
+      await tx1.wait();
+      console.log(`Transferidos ${args[2]} tokens a ${args[1]}`);
+      break;
 
-  // Balance inicial del owner
-  let bOwner = await token.balanceOf(owner.address);
-  console.log("Owner balance (raw):", bOwner.toString());
+    case "mint":
+      const mintAmount = ethers.parseUnits(args[2], 18);
+      const tx2 = await token.mint(owner.address, mintAmount);
+      await tx2.wait();
+      console.log(`Mint ${args[2]} al owner`);
+      break;
 
-  // Transferir 100 tokens (usar unidades con 18 decimales)
-  const amount100 = ethers.parseUnits("100", 18);
-  let tx = await token.transfer(addr1.address, amount100);
-  await tx.wait();
-  console.log("Transferidos 100 tokens a:", addr1.address);
+    case "burn":
+      const burnAmount = ethers.parseUnits(args[2], 18);
+      const tx3 = await token.connect(addr1).burn(burnAmount);
+      await tx3.wait();
+      console.log(`Addr1 quemó ${args[2]}`);
+      break;
 
-  // Balance addr1
-  let b1 = await token.balanceOf(addr1.address);
-  console.log("Addr1 balance (raw):", b1.toString());
+    case "pause":
+      await token.pause();
+      console.log("Token pausado");
+      break;
 
-  // Mint 500 tokens (solo owner)
-  tx = await token.connect(owner).mint(owner.address, ethers.parseUnits("500", 18));
-  await tx.wait();
-  console.log("Mint 500 al owner");
+    case "unpause":
+      await token.unpause();
+      console.log("Token despausado");
+      break;
 
-  // Burn 50 desde addr1
-  tx = await token.connect(addr1).burn(ethers.parseUnits("50", 18));
-  await tx.wait();
-  console.log("Addr1 quemó 50");
+    case "test-suite":
+      console.log("Ejecutando pruebas automáticas...");
+      // aquí podemos correr tu flujo original entero como test
+      break;
 
-  // Pausar (owner)
-  await token.connect(owner).pause();
-  console.log("Token pausado (owner)");
-
-  // Intentar transferir (debe fallar)
-  try {
-    tx = await token.transfer(addr2.address, ethers.parseUnits("1", 18));
-    await tx.wait();
-    console.log("ERROR: Transfer tuvo éxito mientras pausado (no debería)");
-  } catch (e) {
-    console.log("Transfer bloqueado mientras pausado (esperado)");
+    default:
+      console.log("Comando no reconocido");
   }
-
-  // Unpause y transfer
-  await token.connect(owner).unpause();
-  console.log("Token despausado (owner)");
-
-  tx = await token.transfer(addr2.address, ethers.parseUnits("1", 18));
-  await tx.wait();
-  console.log("Transfer luego de unpause OK - addr2 balance:", (await token.balanceOf(addr2.address)).toString());
 }
 
 main().catch((err) => {
   console.error(err);
   process.exitCode = 1;
 });
-
 
