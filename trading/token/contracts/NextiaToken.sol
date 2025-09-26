@@ -28,6 +28,11 @@ contract NextiaToken is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
     }
+    
+    function approve(address spender, uint256 amount) public override whenNotPaused returns (bool) {
+    return super.approve(spender, amount);
+}
+
 
     // ✅ sobrescribir _update para integrar la pausa en transferencias
     function _update(address from, address to, uint256 value)
