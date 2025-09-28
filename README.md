@@ -116,3 +116,94 @@ Ese archivo contiene:\
 3.  Preparar despliegue en testnet (Sepolia).\
 4.  Verificar en Etherscan.\
 5.  Revisar seguridad (multisig, permisos, vesting).
+
+# 🚀 NextiaToken
+
+Smart contract ERC20 con funciones extendidas (mint, burn, pause, unpause) y pruebas de gas.  
+Proyecto basado en **Hardhat** para medición, testeo y optimización.
+
+---
+
+## 📦 Instalación
+
+Clona el repo y entra a la carpeta:
+
+```bash
+git clone https://github.com/NextiaSensei/nextia-token.git
+cd nextia-token
+
+npm install
+
+⚙️ Configuración
+
+Crea archivo .env en la raíz (no subir a GitHub 🚫).
+
+Asegúrate de tener node.js >= 18 y hardhat instalado.
+
+Configura hardhat.config.js con tus redes (ej. hardhat, sepolia, holesky).
+
+🧪 Tests de Gas
+
+Ejecuta los tests de gas:
+
+npx hardhat test test/NextiaToken.gas.test.js --network hardhat
+
+✅ Ejemplo de salida:
+  NextiaToken Gas Tests ⛽
+⛽ Deploy gas used: 1363956
+⛽ Transfer gas used: 54443
+⛽ Mint gas used: 54533
+⛽ Burn gas used: 36519
+⛽ Pause gas used: 28191
+⛽ Unpause gas used: 28144
+
+  6 passing (338ms)
+
+📂 Estructura del proyecto
+nextia-token/
+│── contracts/
+│   └── NextiaToken.sol       # Contrato ERC20
+│── scripts/
+│   ├── gasReport.js          # Script para medir gas
+│   └── test-gas-helpers.js   # Helper de gas
+│── test/
+│   └── NextiaToken.gas.test.js # Pruebas de gas
+│── hardhat.config.js
+│── package.json
+│── .env                      # Variables privadas (ignorado en Git)
+│── .gitignore
+
+📝 Checklist de la versión actual (v0.1 – "Gas Ready")
+
+ Configuración de entorno Hardhat.
+
+ Scripts para medir gas (gasReport.js, test-gas-helpers.js).
+
+ Tests unitarios de gas (NextiaToken.gas.test.js).
+
+ Deploy y ejecución correcta de todas las funciones.
+
+ Repo preparado para GitHub.
+
+🔮 Lo que sigue (v0.2)
+
+Integrar hardhat-gas-reporter para reportes automáticos.
+
+Añadir solidity-coverage para cobertura de pruebas.
+
+Configurar GitHub Actions para CI/CD con tests automáticos.
+
+Optimizar consumo de gas (unchecked, mappings, storage vs memory).
+
+Subir a testnet (Sepolia/Holesky).
+
+🤝 Contribución
+
+Pull requests son bienvenidos.
+Para cambios importantes, abre primero un issue para discutir qué te gustaría mejorar.
+
+📜 Licencia
+
+MIT © Nextia
+
+

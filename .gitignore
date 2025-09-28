@@ -17,3 +17,5 @@ package-lock.json
 
 # Otros locales
 *.log
+node_modules/
+.env
