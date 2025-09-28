@@ -38,3 +38,4 @@ __pycache__/
 .vscode/
 instance/
 >>>>>>> 7bf45c302554a80eacb4d682cba40697a4f2f95d
+trading/token/node_modules/
