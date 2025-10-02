@@ -1,0 +1,14 @@
+flowchart TD
+    A[Iniciar] --> B[Deploy contrato del Token]
+    B --> C[Asignar supply inicial al Owner]
+    C --> D{Acciones disponibles}
+    D -->|Transferir tokens| E[Usuario recibe tokens]
+    D -->|Consultar balance| F[Balance mostrado]
+    D -->|Mint (crear más tokens)| G[Supply aumentado]
+    D -->|Burn (quemar tokens)| H[Supply reducido]
+    D -->|Approve & TransferFrom| I[Delegar tokens a otra cuenta]
+    E --> J[Flujo completo]
+    F --> J
+    G --> J
+    H --> J
+    I --> J

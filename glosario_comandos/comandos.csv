@@ -1,0 +1,27 @@
+Estructura pro para tu CSV
+
+Columnas sugeridas:
+
+Comando → el comando exacto (npx hardhat test).
+
+Herramienta → a qué pertenece (Ubuntu, Git, Hardhat, etc.).
+
+Qué hace → explicación corta (Corre los tests de Solidity).
+
+Cuándo usarlo → contexto (Antes de hacer deploy).
+
+Notas extra → tips, advertencias, atajos.
+
+Ejemplo pro ya en formato tabular:
+
+Comando	Herramienta	Qué hace	Cuándo usarlo	Notas extra
+sudo apt update	Ubuntu	Actualiza la lista de paquetes	Cada semana antes de instalar algo	Requiere internet y permisos de superusuario
+mkdir nombre_carpeta	Ubuntu	Crea una carpeta	Al iniciar un proyecto nuevo	Usa nombres claros y sin espacios
+cd carpeta	Ubuntu	Entra a una carpeta	Para navegar en archivos	cd .. regresa un nivel
+npx hardhat compile	Hardhat	Compila contratos Solidity	Siempre antes de test o deploy	Revisa errores de sintaxis
+npx hardhat test	Hardhat	Corre los tests de contratos	Para verificar lógica del token	Usa console.log dentro de Solidity si dudas
+npx hardhat node	Hardhat	Levanta blockchain local	Terminal 1	Deja esta corriendo en segundo plano
+npx hardhat run scripts/deploy.js --network localhost	Hardhat	Hace deploy en local	Terminal 2 después de levantar node	Copia la dirección generada para interact.js
+git add .	Git	Agrega cambios al stage	Antes de commit	Asegúrate de no subir secretos
+git commit -m "mensaje"	Git	Crea un snapshot del proyecto	Cuando termines una funcionalidad	Mensaje corto pero claro
+git push	Git	Sube cambios a GitHub	Después de commit	Revisa que la rama sea la correcta

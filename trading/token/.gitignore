@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Env
 .env
 
@@ -9,6 +10,8 @@
 # Node
 /node_modules/
 package-lock.json
+.flat/
+results/
 
 # Backups
 /backups/
@@ -17,3 +20,24 @@ package-lock.json
 
 # Otros locales
 *.log
+node_modules/
+.env
+=======
+venv/
+env/
+ENV/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite
+*.db
+.env
+.env.local
+*.log
+.DS_Store
+.idea/
+.vscode/
+instance/
+>>>>>>> 7bf45c302554a80eacb4d682cba40697a4f2f95d
+trading/token/node_modules/

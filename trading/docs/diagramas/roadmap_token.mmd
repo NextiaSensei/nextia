@@ -1,0 +1,13 @@
+flowchart LR
+    A[Deploy contrato] --> B[Transferencia funcional]
+    B --> C[Funciones Mint/Burn]
+    C --> D[Integración dApp]
+
+    A:::done
+    B:::done
+    C:::inprogress
+    D:::pending
+
+    classDef done fill:#2ecc71,stroke:#0f0,stroke-width:2px;
+    classDef inprogress fill:#f1c40f,stroke:#ff0,stroke-width:2px;
+    classDef pending fill:#e74c3c,stroke:#f00,stroke-width:2px;
