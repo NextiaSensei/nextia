@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Inversión Crypto - TokenLab</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #f10050;
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .simulator-card {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            background: #334155;
+            color: var(--text-color);
+        }
+        
+        button {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #d10046;
+        }
+        
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .chart-container {
+            height: 400px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="simulator-card">
+            <h1>🚀 Simulador de Inversión Crypto</h1>
+            <p>Calcula tu proyección de inversión en criptomonedas</p>
+            
+            <div class="input-group">
+                <label for="investmentGoal">Meta de inversión (USD)</label>
+                <input type="number" id="investmentGoal" value="1000000" min="1000">
+            </div>
+            
+            <div class="input-group">
+                <label for="timeMonths">Tiempo (meses)</label>
+                <input type="number" id="timeMonths" value="60" min="1" max="120">
+            </div>
+            
+            <div class="input-group">
+                <label for="monthlyReturn">Rendimiento mensual estimado (%)</label>
+                <input type="number" id="monthlyReturn" value="5" step="0.1" min="1" max="50">
+            </div>
+            
+            <button onclick="calculateInvestment()">Calcular Proyección</button>
+            
+            <div id="results" class="results">
+                <h2>📈 Resultados de tu Inversión</h2>
+                <div class="chart-container">
+                    <canvas id="investmentChart"></canvas>
+                </div>
+                <div id="resultsTable"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateInvestment() {
+            // Por ahora datos de ejemplo - luego conectamos API real
+            const goal = parseFloat(document.getElementById('investmentGoal').value);
+            const months = parseInt(document.getElementById('timeMonths').value);
+            const monthlyReturn = parseFloat(document.getElementById('monthlyReturn').value) / 100;
+            
+            // Mostrar resultados
+            document.getElementById('results').style.display = 'block';
+            
+            // Generar datos para la gráfica
+            generateChart(goal, months, monthlyReturn);
+        }
+        
+        function generateChart(goal, months, monthlyReturn) {
+            const ctx = document.getElementById('investmentChart').getContext('2d');
+            
+            // Datos de ejemplo para la gráfica
+            const labels = Array.from({length: months}, (_, i) => `Mes ${i + 1}`);
+            const data = Array.from({length: months}, (_, i) => {
+                return goal * (1 - Math.pow(1 + monthlyReturn, -(months - i))) / (1 - Math.pow(1 + monthlyReturn, -months));
+            });
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Capital Acumulado (USD)',
+                        data: data,
+                        borderColor: '#f10050',
+                        backgroundColor: 'rgba(241, 0, 80, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Proyección de Inversión'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
