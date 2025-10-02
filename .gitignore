@@ -1,0 +1,28 @@
+# Datos sensibles y configuraciones
+*.env
+config.php
+config/database.php
+api-keys.txt
+*.key
+*.pem
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+
+# Logs y caché
+*.log
+.cache/
+node_modules/
+
+# Backup files
+*.backup
+*.bak
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
