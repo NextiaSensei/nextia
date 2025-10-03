@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simulador de Inversión Crypto — Nextia TokenLab</title>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Estilos (Nextia gradient #f10050) -->
+  <style>
+    :root{
+      --accent1:#f10050;
+      --accent2:#ff6a8b;
+      --card-bg: rgba(255,255,255,0.06);
+      --glass: rgba(255,255,255,0.04);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.75);
+      --radius: 12px;
+      --maxw: 1080px;
+    }
+    *{box-sizing:border-box;font-family:Inter, "Poppins", system-ui, Arial; color:var(--text);}
+    body{
+      min-height:100vh;
+      margin:0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:36px 18px;
+    }
+    .wrap{
+      width:100%;
+      max-width:var(--maxw);
+    }
+    header{
+      margin-bottom:18px;
+      text-align:left;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:56px;height:56px;border-radius:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.17), rgba(0,0,0,0.08));
+      display:flex;align-items:center;justify-content:center;
+      box-shadow: 0 6px 18px rgba(241,0,80,0.18), inset 0 -4px 10px rgba(0,0,0,0.12);
+      font-weight:700;color:#fff;
+    }
+    h1{margin:0;font-size:20px;letter-spacing:0.2px;}
+    p.lead{margin:6px 0 0;color:var(--muted);font-size:13px;}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:18px;
+    }
+
+    /* Card */
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06));
+      border-radius: var(--radius);
+      padding:18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    /* Form */
+    .form-row{display:flex;gap:10px;margin-bottom:12px;align-items:center;}
+    .form-row input, .form-row select{
+      flex:1;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);
+      background:transparent;color:var(--text);
+      outline:none;font-size:14px;
+    }
+    label.small{font-size:12px;color:var(--muted);display:block;margin-bottom:6px;}
+
+    button{
+      background: linear-gradient(90deg, rgba(241,0,80,1), rgba(255,106,139,1));
+      color:white;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600;
+      box-shadow: 0 6px 18px rgba(241,0,80,0.2);
+    }
+
+    .flex{display:flex;gap:12px;align-items:center;}
+    .table{
+      width:100%;border-collapse:collapse;margin-top:10px;font-size:13px;
+    }
+    .table th, .table td{
+      text-align:left;padding:8px;border-bottom:1px dashed rgba(255,255,255,0.04);
+    }
+    .muted{color:var(--muted);font-size:13px;}
+
+    /* Responsive */
+    @media (max-width:980px){
+      .grid{grid-template-columns: 1fr;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">NXT</div>
+        <div>
+          <h1>Simulador de Inversión Crypto — TokenLab</h1>
+          <p class="lead">Proyección y top criptos — Diseñado para Nextia. Interactivo y listo para subir.</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: Inputs, tabla, grafica -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div>
+            <div class="muted">Simulador</div>
+            <strong style="font-size:16px;">Proyección de ahorro e inversión</strong>
+          </div>
+          <div class="muted" style="font-size:13px;">Color Nextia ✅</div>
+        </div>
+
+        <!-- Inputs -->
+        <div style="margin-bottom:10px;">
+          <label class="small">Meta (USD)</label>
+          <input id="input-objetivo" type="number" value="1000000" min="1" />
+        </div>
+        <div class="form-row">
+          <div style="flex:1;">
+            <label class="small">Tiempo (meses)</label>
+            <input id="input-meses" type="number" value="60" min="1" />
+          </div>
+          <div style="width:160px;">
+            <label class="small">Rendimiento mensual (%)</label>
+            <input id="input-rend" type="number" step="0.01" value="5" min="0" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div style="flex:1;">
+            <label class="small">Top N criptos</label>
+            <select id="input-topn"><option>5</option><option selected>10</option><option>20</option></select>
+          </div>
+          <button id="btn-run">Calcular</button>
+        </div>
+
+        <!-- Resultado numerico -->
+        <div style="margin-top:12px;">
+          <div class="muted">Cálculo (explicación):</div>
+          <div id="calc-summary" style="margin-top:8px;font-size:14px;">Ingresa y presiona Calcular para ver la mensualidad y el plan.</div>
+        </div>
+
+        <!-- Chart -->
+        <div style="margin-top:16px;">
+          <canvas id="chartPlan" height="220"></canvas>
+        </div>
+
+        <!-- Tabla criptos -->
+        <div style="margin-top:14px;">
+          <div class="muted">Top criptomonedas (CoinGecko)</div>
+          <table class="table" id="tabla-criptos">
+            <thead>
+              <tr><th>Nombre</th><th>Precio (USD)</th><th>Δ24h (%)</th><th>Potencial</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RIGHT: info y desglose -->
+      <div class="card">
+        <div>
+          <div class="muted">Desglose y ejemplo</div>
+          <h3 style="margin-top:6px;">Detalles matemáticos</h3>
+          <p class="muted" style="font-size:13px;">
+            Fórmula mensualidad: <code>mensualidad = objetivo / sum_{k=1..N} (1+r)^k</code><br>
+            Capital acumulado al mes i: <code>sum_{j=0..i} mensualidad * (1+r)^j</code>
+          </p>
+
+          <div id="detalle-numeros" style="margin-top:8px;font-size:13px;color:var(--muted);"></div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);margin:12px 0;" />
+
+          <div>
+            <div class="muted">Nota técnica</div>
+            <ul style="padding-left:16px;color:var(--muted);font-size:13px;">
+              <li>Datos de precios extraídos de CoinGecko (API pública — sin API key).</li>
+              <li>Chart.js para gráfico interactivo.</li>
+              <li>Este es un frontend puro: puedes subirlo directo a Hostinger sin instalar Python.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script principal -->
+  <script>
+    // ---------- Helpers ----------
+    function formatUSD(n) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(n);
+    }
+
+    // Calcula mensualidad usando la misma lógica de tu python:
+    // mensualidad = objetivo / sum_{k=1..N} (1+r)^k
+    function calcularMensualidad(objetivo, meses, rendimientoDecimal) {
+      let sum = 0;
+      for (let k = 1; k <= meses; k++) {
+        sum += Math.pow(1 + rendimientoDecimal, k);
+      }
+      const mensual = objetivo / sum;
+      return { mensual, denominador: sum };
+    }
+
+    // Construye el plan (cumulative)
+    function generarPlan(mensual, meses, rendimientoDecimal) {
+      const rows = [];
+      let acumulado = 0;
+      for (let i = 0; i < meses; i++) {
+        acumulado += mensual * Math.pow(1 + rendimientoDecimal, i);
+        rows.push({
+          mes: i+1,
+          inversion: mensual,
+          acumulado: acumulado
+        });
+      }
+      return rows;
+    }
+
+    // Dibuja el chart con Chart.js
+    let chart = null;
+    function dibujarGrafica(plan) {
+      const ctx = document.getElementById('chartPlan').getContext('2d');
+      const labels = plan.map(r => 'M' + r.mes);
+      const data = plan.map(r => r.acumulado);
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Capital Acumulado (USD)',
+            data,
+            fill: false,
+            borderWidth: 3,
+            tension: 0.25,
+            // color is allowed default; Chart.js chooses color; style kept simple
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true, ticks: { callback: v => formatUSD(v) } }
+          },
+          plugins: {
+            legend: { display: true }
+          }
+        }
+      });
+    }
+
+    // Llena tabla criptos
+    function poblarTablaCriptos(data) {
+      const tbody = document.querySelector('#tabla-criptos tbody');
+      tbody.innerHTML = '';
+      data.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${c.name}</td>
+                        <td>${formatUSD(c.current_price)}</td>
+                        <td>${(c.price_change_percentage_24h ?? 0).toFixed(2)}%</td>
+                        <td>${(c.potencial ?? 0).toFixed(4)}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Fetch CoinGecko top N
+    async function obtenerTopCriptos(n=10) {
+      const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${n}&page=1&sparkline=false`;
+      try {
+        const res = await fetch(url);
+        if(!res.ok) throw new Error('CoinGecko API error: ' + res.status);
+        const data = await res.json();
+        // calcula potencial = price_change_percentage_24h + (total_volume / 1e9)
+        const enriched = data.map(d => {
+          return {
+            id: d.id,
+            symbol: d.symbol,
+            name: d.name,
+            current_price: d.current_price,
+            price_change_percentage_24h: d.price_change_percentage_24h,
+            total_volume: d.total_volume,
+            potencial: ( (d.price_change_percentage_24h ?? 0) + (d.total_volume / 1e9) )
+          };
+        });
+        // ordenar por potencial descendente
+        enriched.sort((a,b) => (b.potencial ?? 0) - (a.potencial ?? 0));
+        return enriched;
+      } catch (err) {
+        console.error(err);
+        alert('Error al obtener datos de CoinGecko. Revisa consola.');
+        return [];
+      }
+    }
+
+    // Evento principal
+    document.getElementById('btn-run').addEventListener('click', async () => {
+      const objetivo = Number(document.getElementById('input-objetivo').value) || 0;
+      const meses = parseInt(document.getElementById('input-meses').value) || 1;
+      const rendPct = Number(document.getElementById('input-rend').value) || 0;
+      const topn = parseInt(document.getElementById('input-topn').value) || 10;
+      const r = rendPct / 100;
+
+      // cálculo
+      const { mensual, denominador } = calcularMensualidad(objetivo, meses, r);
+      const plan = generarPlan(mensual, meses, r);
+      dibujarGrafica(plan);
+
+      // resumen numérico (mostrar con precisión)
+      const resumen = document.getElementById('calc-summary');
+      resumen.innerHTML = `<strong>Mensualidad:</strong> ${formatUSD(mensual.toFixed(2))} / mes<br>
+        <strong>Denominador (suma de (1+r)^k):</strong> ${denominador.toFixed(12)}<br>
+        <strong>Ejemplo:</strong> objetivo ${formatUSD(objetivo)} · ${meses} meses · ${rendPct}%/mes`;
+
+      // detalle a la derecha
+      const detalle = document.getElementById('detalle-numeros');
+      detalle.innerHTML = `
+        <div><strong>Denominador calculado:</strong> ${denominador.toFixed(12)}</div>
+        <div style="margin-top:6px;"><strong>Mensualidad calculada:</strong> ${formatUSD(mensual.toFixed(6))} (precisión)</div>
+        <div style="margin-top:6px;"><strong>Primeros 5 meses (acumulado):</strong>
+          <ul style="margin:6px 0 0 14px;color:var(--muted)">
+            ${plan.slice(0,5).map(p=>`<li>M${p.mes}: ${formatUSD(p.acumulado.toFixed(2))}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+
+      // obtener criptos y poblar tabla
+      const topCrips = await obtenerTopCriptos(topn);
+      poblarTablaCriptos(topCrips);
+
+      // scroll suave a chart (mejor UX)
+      document.getElementById('chartPlan').scrollIntoView({behavior:'smooth'});
+    });
+
+    // Auto run al cargar
+    window.addEventListener('load', () => {
+      document.getElementById('btn-run').click();
+    });
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+import requests
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# API Base URL para CoinGecko
+API_URL = "https://api.coingecko.com/api/v3"
+
+# 1. Función para obtener datos de criptomonedas
+def obtener_top_criptomonedas(n=10):
+    """Obtiene el top n criptomonedas por capitalización de mercado."""
+    url = f"{API_URL}/coins/markets"
+    params = {
+        "vs_currency": "usd",
+        "order": "market_cap_desc",
+        "per_page": n,
+        "page": 1,
+        "sparkline": False
+    }
+    response = requests.get(url, params=params)
+    return pd.DataFrame(response.json())
+
+# 2. Función para evaluar criptomonedas prometedoras
+def evaluar_criptomonedas(df):
+    """Evalúa criptomonedas basadas en métricas como cambio en 24h y volumen."""
+    df["potencial"] = df["price_change_percentage_24h"] + (df["total_volume"] / 1e9)
+    return df.sort_values(by="potencial", ascending=False)
+
+# 3. Plan de inversión
+def plan_inversion(objetivo_usd, tiempo_meses, rendimiento_mensual):
+    """Genera un plan de inversión para alcanzar un objetivo en un tiempo dado."""
+    mensualidad = objetivo_usd / ((1 + rendimiento_mensual) ** np.arange(1, tiempo_meses + 1)).sum()
+    plan = {
+        "Mes": np.arange(1, tiempo_meses + 1),
+        "Inversión Mensual (USD)": [mensualidad] * tiempo_meses,
+        "Capital Acumulado (USD)": np.cumsum([mensualidad * (1 + rendimiento_mensual) ** i for i in range(tiempo_meses)])
+    }
+    return pd.DataFrame(plan)
+
+# 4. Distribución de inversión por criptomoneda
+def distribuir_inversion(inversion_total, criptos):
+    """Distribuye la inversión total entre las criptomonedas según su potencial."""
+    criptos["porcentaje_inversion"] = criptos["potencial"] / criptos["potencial"].sum()
+    criptos["inversion_asignada"] = criptos["porcentaje_inversion"] * inversion_total
+    return criptos
+
+# 5. Predicciones de precios a 2030
+def predecir_precios(df, crecimiento_anual=0.2):
+    """Predice precios futuros basados en una tasa de crecimiento anual."""
+    anos = 2030 - 2024
+    df["precio_2030"] = df["current_price"] * ((1 + crecimiento_anual) ** anos)
+    return df
+
+# 6. Visualización de los datos
+def graficar_plan(plan):
+    plt.figure(figsize=(10, 6))
+    plt.plot(plan["Mes"], plan["Capital Acumulado (USD)"], label="Capital Acumulado", color="green")
+    plt.xlabel("Mes")
+    plt.ylabel("Capital (USD)")
+    plt.title("Proyección de Inversión")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+# --- Ejecución del Script ---
+
+# Obtener las criptomonedas principales
+top_criptos = obtener_top_criptomonedas()
+evaluadas = evaluar_criptomonedas(top_criptos)
+
+print("Top Criptomonedas Prometedoras:")
+print(evaluadas[["name", "current_price", "price_change_percentage_24h", "potencial"]])
+
+# Crear un plan de inversión
+objetivo = 1_000_000  # Meta en USD
+tiempo = 60  # Tiempo en meses
+rendimiento = 0.05  # Rendimiento mensual estimado (5%)
+
+plan = plan_inversion(objetivo, tiempo, rendimiento)
+print("\nPlan de Inversión:")
+print(plan)
+
+# Distribuir la inversión total entre criptomonedas
+inversion_total = plan["Inversión Mensual (USD)"].sum()
+distribucion = distribuir_inversion(inversion_total, evaluadas)
+print("\nDistribución de Inversión por Criptomoneda:")
+print(distribucion[["name", "current_price", "inversion_asignada"]])
+
+# Predicciones de precios a 2030
+predicciones = predecir_precios(evaluadas)
+print("\nPredicciones de Precios para 2030:")
+print(predicciones[["name", "current_price", "precio_2030"]])
+
+# Graficar el plan
+graficar_plan(plan)
+
